@@ -1,5 +1,5 @@
-﻿Build started 2015-05-16 12:21:12.
-     1>Project "C:\Users\Qruczy\documents\visual studio 2010\Projects\PROJEKT WINAPI\PROJEKT WINAPI\PROJEKT WINAPI.vcxproj" on node 2 (build target(s)).
+﻿Build started 2015-05-16 23:28:04.
+     1>Project "C:\Users\Qruczy\Desktop\git projekt dzwig\TP_Projekt3_OskBagin_RemKruk\PROJEKT WINAPI\PROJEKT WINAPI.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\PROJEKT WINAPI.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
@@ -11,7 +11,7 @@
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
-         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Qruczy\documents\visual studio 2010\Projects\PROJEKT WINAPI\Debug\PROJEKT WINAPI.exe" /INCREMENTAL /NOLOGO gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\PROJEKT WINAPI.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Qruczy\documents\visual studio 2010\Projects\PROJEKT WINAPI\Debug\PROJEKT WINAPI.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Qruczy\documents\visual studio 2010\Projects\PROJEKT WINAPI\Debug\PROJEKT WINAPI.lib" /MACHINE:X86 "Debug\PROJEKT WINAPI.res"
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Qruczy\Desktop\git projekt dzwig\TP_Projekt3_OskBagin_RemKruk\Debug\PROJEKT WINAPI.exe" /INCREMENTAL /NOLOGO gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\PROJEKT WINAPI.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Qruczy\Desktop\git projekt dzwig\TP_Projekt3_OskBagin_RemKruk\Debug\PROJEKT WINAPI.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Qruczy\Desktop\git projekt dzwig\TP_Projekt3_OskBagin_RemKruk\Debug\PROJEKT WINAPI.lib" /MACHINE:X86 "Debug\PROJEKT WINAPI.res"
          "Debug\PROJEKT WINAPI.exe.embed.manifest.res"
          "Debug\PROJEKT WINAPI.obj"
          Debug\stdafx.obj
@@ -20,12 +20,12 @@
          All outputs are up-to-date.
        LinkEmbedManifest:
          All outputs are up-to-date.
-         PROJEKT WINAPI.vcxproj -> C:\Users\Qruczy\documents\visual studio 2010\Projects\PROJEKT WINAPI\Debug\PROJEKT WINAPI.exe
+         PROJEKT WINAPI.vcxproj -> C:\Users\Qruczy\Desktop\git projekt dzwig\TP_Projekt3_OskBagin_RemKruk\Debug\PROJEKT WINAPI.exe
        FinalizeBuildStatus:
          Deleting file "Debug\PROJEKT WINAPI.unsuccessfulbuild".
          Touching "Debug\PROJEKT WINAPI.lastbuildstate".
-     1>Done Building Project "C:\Users\Qruczy\documents\visual studio 2010\Projects\PROJEKT WINAPI\PROJEKT WINAPI\PROJEKT WINAPI.vcxproj" (build target(s)).
+     1>Done Building Project "C:\Users\Qruczy\Desktop\git projekt dzwig\TP_Projekt3_OskBagin_RemKruk\PROJEKT WINAPI\PROJEKT WINAPI.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.85
+Time Elapsed 00:00:00.92

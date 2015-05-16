@@ -17,18 +17,36 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
+const WORD ID_TIMER = 1;
+int positionX=300;
+int positionY=135;
 
-
-void RysujDzwig(HDC hdc)
+void RysujDzwig( HDC hdc)
 {
+	int i = 0;
 	Graphics graphics(hdc);
-   Pen      pen(Color(255, 0, 0, 255));
+   Pen      pen(Color(255, 100, 100, 100),2);
+   	Image image(L"grafika/dzwig.jpg");
 
+	  graphics.DrawImage(&image, 10, 10);
+	graphics.DrawLine(&pen, 300+i, 135, 290+i, 180);
+	  graphics.DrawLine(&pen, 300+i, 135, 310+i, 180);
+}
 
-	Image image(L"grafika/dzwig.jpg");
-	graphics.DrawImage(&image, 10, 10);
-	 //  graphics.DrawLine(&pen, 0, 0, 200, 100);
-
+void PoruszajDzwig( HDC hdc, int i, int k)
+{
+	
+	Graphics graphics(hdc);
+   Pen      pen(Color(255, 100, 100, 100),2);
+   	Image image(L"grafika/dzwig.jpg");
+ 
+ 
+	  graphics.DrawImage(&image, 10, 10);
+	  graphics.DrawLine(&pen, positionX, positionY, positionX-10, positionY+45);
+	  graphics.DrawLine(&pen, positionX, positionY, positionX+10, positionY+45);
+	  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
+	  positionX+=i;
+	  positionY+=k;
 }
 
 // MAIN
@@ -130,7 +148,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
-
+  SetTimer( hWnd, ID_TIMER, 10000, NULL );
    if (!hWnd)
    {
       return FALSE;
@@ -177,16 +195,60 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
-		
-		RysujDzwig(hdc);
 
+		// TODO: Add any drawing code here...
+		hdc = BeginPaint(hWnd, &ps);
+		RysujDzwig(hdc);
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
+		KillTimer( hWnd, ID_TIMER );
 		PostQuitMessage(0);
 		break;
+	case WM_TIMER:
+			//	RysujDzwig(hdc);
+			//	EndPaint(hWnd, &ps);
+			break;
+	case WM_KEYDOWN:
+{
+    switch (wParam) {
+        case VK_RIGHT:
+        {
+			InvalidateRect(hWnd, NULL, TRUE);
+			hdc = BeginPaint(hWnd, &ps);
+            PoruszajDzwig(hdc,1,0);
+			EndPaint(hWnd, &ps);
+            break;
+        }
+		case VK_LEFT:
+        {
+			InvalidateRect(hWnd, NULL, TRUE);
+			hdc = BeginPaint(hWnd, &ps);
+            PoruszajDzwig(hdc,-1,0);
+			EndPaint(hWnd, &ps);
+            break;
+        }
+		case VK_DOWN:
+        {
+			InvalidateRect(hWnd, NULL, TRUE);
+			hdc = BeginPaint(hWnd, &ps);
+            PoruszajDzwig(hdc,0,1);
+			EndPaint(hWnd, &ps);
+            break;
+        }
+		case VK_UP:
+        {
+			InvalidateRect(hWnd, NULL, TRUE);
+			hdc = BeginPaint(hWnd, &ps);
+            PoruszajDzwig(hdc,0,-1);
+			EndPaint(hWnd, &ps);
+            break;
+        }
+    }
+    break;
+}
+
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
