@@ -17,7 +17,6 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
-const WORD ID_TIMER = 1;
 int positionX=300;
 int positionY=135;
 
@@ -147,7 +146,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
-  SetTimer( hWnd, ID_TIMER, 10000, NULL );
    if (!hWnd)
    {
       return FALSE;
@@ -210,7 +208,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
-		KillTimer( hWnd, ID_TIMER );
 		PostQuitMessage(0);
 		break;
 	case WM_TIMER:
