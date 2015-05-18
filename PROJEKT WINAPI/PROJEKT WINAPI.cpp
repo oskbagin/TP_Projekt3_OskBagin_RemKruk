@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "PROJEKT WINAPI.h"
+#include "Bloczek.h"
 
 #define MAX_LOADSTRING 100
 
@@ -17,19 +18,25 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
-int positionX=300;
+int positionX=450;
 int positionY=135;
+int ktory=0; 
 
-void RysujDzwig( HDC hdc)
+Bloczek klocuszki[5] = { Bloczek("Kolko", 272, 495), Bloczek("Trojkat", 400, 495), Bloczek("Kolko", 550, 495),
+					Bloczek("Kwadrat", 350, 495), Bloczek("Trojkat", 488, 495)};
+
+void rysujKlocuszki(HDC hdc, Bloczek tab[])
 {
-   	  int i = 0;
-	  Graphics graphics(hdc);
-      Pen      pen(Color(255, 100, 100, 100),2);
-   	  Image image(L"grafika/dzwig.jpg");
+	Graphics graphics(hdc);
 
-	  graphics.DrawImage(&image, 10, 10);
-	  graphics.DrawLine(&pen, 300+i, 135, 290+i, 180);
-	  graphics.DrawLine(&pen, 300+i, 135, 310+i, 180);
+	Pen      pen(Color(255, 0, 0, 255),2);
+
+	for(int i=0; i<5; i++){
+		if(tab[i].getKsztalt() == "Trojkat" && !tab[i].zlapany){  
+		Image image(L"grafika/trojkat.jpg");
+
+		graphics.DrawImage(&image, tab[i].getX(), tab[i].getY()-65); }
+	}
 }
 
 void PoruszajDzwig( HDC hdc, int i, int k)
@@ -37,12 +44,20 @@ void PoruszajDzwig( HDC hdc, int i, int k)
 	  Graphics graphics(hdc);
       Pen      pen(Color(255, 100, 100, 100),2);
    	  Image image(L"grafika/dzwig.jpg");
- 
- 
+
 	  graphics.DrawImage(&image, 10, 10);
-	  graphics.DrawLine(&pen, positionX, positionY, positionX-10, positionY+45);
-	  graphics.DrawLine(&pen, positionX, positionY, positionX+10, positionY+45);
-	  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
+	  rysujKlocuszki(hdc, klocuszki);
+	  if(!klocuszki[ktory].zlapany)
+	  {
+		graphics.DrawLine(&pen, positionX, positionY, positionX-10, positionY+45);
+		graphics.DrawLine(&pen, positionX, positionY, positionX+10, positionY+45);
+		graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
+	  }
+	  else{
+		  Image image(L"grafika/trojkat.jpg");
+		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
+		  graphics.DrawImage(&image, positionX-30, positionY-20);
+	  }
 	  positionX+=i;
 	  positionY+=k;
 }
@@ -145,7 +160,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+      CW_USEDEFAULT, 0, 1500, 1500, NULL, NULL, hInstance, NULL);
    if (!hWnd)
    {
       return FALSE;
@@ -200,12 +215,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
-	case WM_PAINT:
-
+	case WM_PAINT:{
 		// TODO: Add any drawing code here...
 		hdc = BeginPaint(hWnd, &ps);
-		RysujDzwig(hdc);
+		PoruszajDzwig(hdc, 0, 0);
 		EndPaint(hWnd, &ps);
+		}
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
@@ -220,27 +235,51 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case VK_RIGHT:
         {
 			if(positionX < 550){
-				InvalidateRect(hWnd, NULL, TRUE);
+				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
 				PoruszajDzwig(hdc,1,0);
 				EndPaint(hWnd, &ps);
 			}
             break;
         }
+		case VK_SPACE:
+		{
+			for(ktory=0; ktory<5; ktory++){
+				if(abs(klocuszki[ktory].getX() - positionX +25) < 25 && 
+					positionY > 415 && klocuszki[ktory].getKsztalt() == "Trojkat" || 
+					klocuszki[ktory].zlapany){
+						if(klocuszki[ktory].zlapany) klocuszki[ktory].zmienX(positionX-30);
+					klocuszki[ktory].zlapany = !klocuszki[ktory].zlapany;
+			::MessageBox(hWnd, _T("ZLAPALEM!"), _T("LMB"), MB_OK);
+					break;
+				}
+				
+			}
+			break;
+		}
+		case VK_END:
+		{
+			positionY = 449;
+			InvalidateRect(hWnd, NULL, FALSE);
+				hdc = BeginPaint(hWnd, &ps);
+				PoruszajDzwig(hdc,1,0);
+				EndPaint(hWnd, &ps);
+		}
 		case VK_LEFT:
         {
 			if(positionX > 200){
-				InvalidateRect(hWnd, NULL, TRUE);
+				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
 				PoruszajDzwig(hdc,-1,0);
 				EndPaint(hWnd, &ps);
 			}
             break;
         }
+		//case VK_
 		case VK_DOWN:
         {
 			if(positionY < 450){
-				InvalidateRect(hWnd, NULL, TRUE);
+				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
 				PoruszajDzwig(hdc,0,1);
 				EndPaint(hWnd, &ps);
@@ -250,7 +289,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case VK_UP:
         {
 			if(positionY>135){
-				InvalidateRect(hWnd, NULL, TRUE);
+				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
 				PoruszajDzwig(hdc,0,-1);
 				EndPaint(hWnd, &ps);

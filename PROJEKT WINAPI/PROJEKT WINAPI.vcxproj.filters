@@ -36,12 +36,18 @@
     <ClInclude Include="PROJEKT WINAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Bloczek.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PROJEKT WINAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bloczek.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
