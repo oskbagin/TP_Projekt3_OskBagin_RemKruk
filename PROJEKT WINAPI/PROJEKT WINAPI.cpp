@@ -17,20 +17,18 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
-const WORD ID_TIMER = 1;
 int positionX=300;
 int positionY=135;
 
 void RysujDzwig( HDC hdc)
 {
-	int i = 0;
 	Graphics graphics(hdc);
    Pen      pen(Color(255, 100, 100, 100),2);
    	Image image(L"grafika/dzwig.jpg");
 
 	  graphics.DrawImage(&image, 10, 10);
-	graphics.DrawLine(&pen, 300+i, 135, 290+i, 180);
-	  graphics.DrawLine(&pen, 300+i, 135, 310+i, 180);
+	graphics.DrawLine(&pen, 300, 135, 290, 180);
+	  graphics.DrawLine(&pen, 300, 135, 310, 180);
 }
 
 void PoruszajDzwig( HDC hdc, int i, int k)
@@ -148,7 +146,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
-  SetTimer( hWnd, ID_TIMER, 10000, NULL );
    if (!hWnd)
    {
       return FALSE;
@@ -202,7 +199,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
-		KillTimer( hWnd, ID_TIMER );
 		PostQuitMessage(0);
 		break;
 	case WM_TIMER:
