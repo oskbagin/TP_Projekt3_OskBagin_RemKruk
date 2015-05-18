@@ -23,22 +23,21 @@ int positionY=135;
 
 void RysujDzwig( HDC hdc)
 {
-	int i = 0;
-	Graphics graphics(hdc);
-   Pen      pen(Color(255, 100, 100, 100),2);
-   	Image image(L"grafika/dzwig.jpg");
+   	  int i = 0;
+	  Graphics graphics(hdc);
+      Pen      pen(Color(255, 100, 100, 100),2);
+   	  Image image(L"grafika/dzwig.jpg");
 
 	  graphics.DrawImage(&image, 10, 10);
-	graphics.DrawLine(&pen, 300+i, 135, 290+i, 180);
+	  graphics.DrawLine(&pen, 300+i, 135, 290+i, 180);
 	  graphics.DrawLine(&pen, 300+i, 135, 310+i, 180);
 }
 
 void PoruszajDzwig( HDC hdc, int i, int k)
 {
-	
-	Graphics graphics(hdc);
-   Pen      pen(Color(255, 100, 100, 100),2);
-   	Image image(L"grafika/dzwig.jpg");
+	  Graphics graphics(hdc);
+      Pen      pen(Color(255, 100, 100, 100),2);
+   	  Image image(L"grafika/dzwig.jpg");
  
  
 	  graphics.DrawImage(&image, 10, 10);
@@ -178,6 +177,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
+	case WM_LBUTTONDOWN:
+		{
+			int iPosX = LOWORD(lParam);
+			int iPosY = HIWORD(lParam);
+			wchar_t waCoord[20];
+			wsprintf(waCoord, _T(" (%i, %i) "), iPosX, iPosY);
+			::MessageBox(hWnd, waCoord, _T("LMB"), MB_OK);
+			break;
+		}
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
@@ -214,35 +222,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wParam) {
         case VK_RIGHT:
         {
-			InvalidateRect(hWnd, NULL, TRUE);
-			hdc = BeginPaint(hWnd, &ps);
-            PoruszajDzwig(hdc,1,0);
-			EndPaint(hWnd, &ps);
+			if(positionX < 550){
+				InvalidateRect(hWnd, NULL, TRUE);
+				hdc = BeginPaint(hWnd, &ps);
+				PoruszajDzwig(hdc,1,0);
+				EndPaint(hWnd, &ps);
+			}
             break;
         }
 		case VK_LEFT:
         {
-			InvalidateRect(hWnd, NULL, TRUE);
-			hdc = BeginPaint(hWnd, &ps);
-            PoruszajDzwig(hdc,-1,0);
-			EndPaint(hWnd, &ps);
+			if(positionX > 200){
+				InvalidateRect(hWnd, NULL, TRUE);
+				hdc = BeginPaint(hWnd, &ps);
+				PoruszajDzwig(hdc,-1,0);
+				EndPaint(hWnd, &ps);
+			}
             break;
         }
 		case VK_DOWN:
         {
-			InvalidateRect(hWnd, NULL, TRUE);
-			hdc = BeginPaint(hWnd, &ps);
-            PoruszajDzwig(hdc,0,1);
-			EndPaint(hWnd, &ps);
+			if(positionY < 450){
+				InvalidateRect(hWnd, NULL, TRUE);
+				hdc = BeginPaint(hWnd, &ps);
+				PoruszajDzwig(hdc,0,1);
+				EndPaint(hWnd, &ps);
+			}
             break;
         }
 		case VK_UP:
         {
-			InvalidateRect(hWnd, NULL, TRUE);
-			hdc = BeginPaint(hWnd, &ps);
-            PoruszajDzwig(hdc,0,-1);
-			EndPaint(hWnd, &ps);
-            break;
+			if(positionY>135){
+				InvalidateRect(hWnd, NULL, TRUE);
+				hdc = BeginPaint(hWnd, &ps);
+				PoruszajDzwig(hdc,0,-1);
+				EndPaint(hWnd, &ps);
+			}
+			break;
         }
     }
     break;
