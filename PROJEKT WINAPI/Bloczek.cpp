@@ -3,7 +3,7 @@
 
 Bloczek::Bloczek(void)
 {
-	zlapany = false;
+	Bloczek("", 0, 0);
 }
 
 Bloczek::Bloczek(string shape, int X, int Y)

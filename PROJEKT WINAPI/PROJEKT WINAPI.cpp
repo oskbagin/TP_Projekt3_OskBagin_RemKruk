@@ -19,7 +19,7 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
 int positionX=450;
-int positionY=135;
+int positionY=155;
 int ktory=0; 
 
 Bloczek klocuszki[5] = { Bloczek("Kolko", 272, 495), Bloczek("Trojkat", 400, 495), Bloczek("Kolko", 550, 495),
@@ -28,14 +28,34 @@ Bloczek klocuszki[5] = { Bloczek("Kolko", 272, 495), Bloczek("Trojkat", 400, 495
 void rysujKlocuszki(HDC hdc, Bloczek tab[])
 {
 	Graphics graphics(hdc);
-
+	
 	Pen      pen(Color(255, 0, 0, 255),2);
 
 	for(int i=0; i<5; i++){
-		if(tab[i].getKsztalt() == "Trojkat" && !tab[i].getZlapany()){  
-		Image image(L"grafika/trojkat.jpg");
+		// Rysowanie trójk¹ta z grafiki - trzeba wykminiæ, jak zrobiæ przezroczyste poza trójk¹tem
+		if(tab[i].getKsztalt() == "Trojkat" && !tab[i].getZlapany()){ 
+			/*Image image(L"grafika/trojkat.jpg");
+			graphics.DrawImage(&image, tab[i].getX(), tab[i].getY()-65); 		*/
+			SolidBrush brush(Color(255, 255, 0, 0));
+			Point punkty[3]={ Point(tab[i].getX(), tab[i].getY()), Point(tab[i].getX()+30, tab[i].getY()),
+															Point(tab[i].getX()+15, tab[i].getY()-30)};
+			graphics.FillPolygon(&brush, punkty, 3);
+		}
+		// Rysowanie kwadratu
+		else if(tab[i].getKsztalt() == "Kwadrat"){
+			int x=tab[i].getX(), y=tab[i].getY()-30;
+			Rect rect(x, y, 30,30);
+			SolidBrush brush(Color(255, 0, 0, 255));
 
-		graphics.DrawImage(&image, tab[i].getX(), tab[i].getY()-65); }
+			graphics.FillRectangle(&brush, rect);
+		}
+		// Rysowanie kó³eczka
+		else if(tab[i].getKsztalt() == "Kolko"){
+			SolidBrush brush(Color(255, 221, 255, 5));
+			graphics.FillEllipse(&brush, tab[i].getX(), tab[i].getY()-28, 30, 30);
+		}
+
+			
 	}
 }
 
@@ -47,6 +67,7 @@ void PoruszajDzwig( HDC hdc, int i, int k)
 
 	  graphics.DrawImage(&image, 10, 10);
 	  rysujKlocuszki(hdc, klocuszki);
+
 	  if(!klocuszki[ktory].getZlapany())
 	  {
 		  graphics.DrawLine(&pen, positionX, positionY, positionX-10, positionY+45);
@@ -54,9 +75,13 @@ void PoruszajDzwig( HDC hdc, int i, int k)
 		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
 	  }
 	  else{
-		  Image image(L"grafika/trojkat.jpg");
+		  SolidBrush brush(Color(255, 255, 0, 0));
+		  Point punkty[3]={ Point(positionX-15, positionY+30), Point(positionX+15, positionY+30),
+															Point(positionX, positionY)};
+
 		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
-		  graphics.DrawImage(&image, positionX-31, positionY-20);
+		  graphics.FillPolygon(&brush, punkty, 3);
+		  //graphics.DrawImage(&image, positionX-31, positionY-20);
 	  }
 	  positionX+=i;
 	  positionY+=k;
@@ -234,10 +259,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wParam) {
         case VK_RIGHT:
         {
-			if(positionX < 550){
+			if(positionX < 660){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,1,0);
+				PoruszajDzwig(hdc,5,0);
 				EndPaint(hWnd, &ps);
 			}
             break;
@@ -245,10 +270,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case VK_SPACE:
 		{
 			for(ktory=0; ktory<5; ktory++){
-				if(abs(klocuszki[ktory].getX() - positionX +25) < 25 && 
-					positionY > 415 && klocuszki[ktory].getKsztalt() == "Trojkat" || 
+				if(abs(klocuszki[ktory].getX() - positionX+5) < 15 && 
+					positionY > 400 && klocuszki[ktory].getKsztalt() == "Trojkat" || 
 					klocuszki[ktory].getZlapany()){
-						if(klocuszki[ktory].getZlapany())		klocuszki[ktory].zmienX(positionX-30);
+						if(klocuszki[ktory].getZlapany())		klocuszki[ktory].zmienX(positionX-15);
 
 						klocuszki[ktory].zmienZlapany(!klocuszki[ktory].getZlapany());
 						::MessageBox(hWnd, _T("ZLAPALEM!"), _T("LMB"), MB_OK);
@@ -257,20 +282,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
-		case VK_END:
+		case VK_END: // instantowe opuszczenie haka na dó³
 		{
 			positionY = 449;
 			InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,1,0);
+				PoruszajDzwig(hdc,5,0);
 				EndPaint(hWnd, &ps);
+				break;
+		}
+		case VK_HOME: // instantowe wci¹gniêcie haka na wysokoœæ ramienia
+		{
+			positionY=155;
+			InvalidateRect(hWnd, NULL, FALSE);
+				hdc = BeginPaint(hWnd, &ps);
+				PoruszajDzwig(hdc,5,0);
+				EndPaint(hWnd, &ps);
+				break;
 		}
 		case VK_LEFT:
         {
 			if(positionX > 200){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,-1,0);
+				PoruszajDzwig(hdc,-5,0);
 				EndPaint(hWnd, &ps);
 			}
             break;
@@ -281,17 +316,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(positionY < 450){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,0,1);
+				PoruszajDzwig(hdc,0,5);
 				EndPaint(hWnd, &ps);
 			}
             break;
         }
 		case VK_UP:
         {
-			if(positionY>135){
+			if(positionY>155){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,0,-1);
+				PoruszajDzwig(hdc,0,-5);
 				EndPaint(hWnd, &ps);
 			}
 			break;
