@@ -32,7 +32,7 @@ void rysujKlocuszki(HDC hdc, Bloczek tab[])
 	Pen      pen(Color(255, 0, 0, 255),2);
 
 	for(int i=0; i<5; i++){
-		if(tab[i].getKsztalt() == "Trojkat" && !tab[i].zlapany){  
+		if(tab[i].getKsztalt() == "Trojkat" && !tab[i].getZlapany()){  
 		Image image(L"grafika/trojkat.jpg");
 
 		graphics.DrawImage(&image, tab[i].getX(), tab[i].getY()-65); }
@@ -43,20 +43,20 @@ void PoruszajDzwig( HDC hdc, int i, int k)
 {
 	  Graphics graphics(hdc);
       Pen      pen(Color(255, 100, 100, 100),2);
-   	  Image image(L"grafika/dzwig.jpg");
+   	  Image image(L"grafika/dzwig_2.jpg");
 
 	  graphics.DrawImage(&image, 10, 10);
 	  rysujKlocuszki(hdc, klocuszki);
-	  if(!klocuszki[ktory].zlapany)
+	  if(!klocuszki[ktory].getZlapany())
 	  {
-		graphics.DrawLine(&pen, positionX, positionY, positionX-10, positionY+45);
-		graphics.DrawLine(&pen, positionX, positionY, positionX+10, positionY+45);
-		graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
+		  graphics.DrawLine(&pen, positionX, positionY, positionX-10, positionY+45);
+		  graphics.DrawLine(&pen, positionX, positionY, positionX+10, positionY+45);
+		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
 	  }
 	  else{
 		  Image image(L"grafika/trojkat.jpg");
 		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
-		  graphics.DrawImage(&image, positionX-30, positionY-20);
+		  graphics.DrawImage(&image, positionX-31, positionY-20);
 	  }
 	  positionX+=i;
 	  positionY+=k;
@@ -247,13 +247,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			for(ktory=0; ktory<5; ktory++){
 				if(abs(klocuszki[ktory].getX() - positionX +25) < 25 && 
 					positionY > 415 && klocuszki[ktory].getKsztalt() == "Trojkat" || 
-					klocuszki[ktory].zlapany){
-						if(klocuszki[ktory].zlapany) klocuszki[ktory].zmienX(positionX-30);
-					klocuszki[ktory].zlapany = !klocuszki[ktory].zlapany;
-			::MessageBox(hWnd, _T("ZLAPALEM!"), _T("LMB"), MB_OK);
+					klocuszki[ktory].getZlapany()){
+						if(klocuszki[ktory].getZlapany())		klocuszki[ktory].zmienX(positionX-30);
+
+						klocuszki[ktory].zmienZlapany(!klocuszki[ktory].getZlapany());
+						::MessageBox(hWnd, _T("ZLAPALEM!"), _T("LMB"), MB_OK);
 					break;
 				}
-				
 			}
 			break;
 		}

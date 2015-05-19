@@ -13,6 +13,12 @@ Bloczek::Bloczek(string shape, int X, int Y)
 	Ksztalt=shape;
 }
 
+bool Bloczek::zmienZlapany(bool z)
+{
+	this->zlapany=z;
+	return z;
+}
+
 Bloczek::~Bloczek(void)
 {
 }

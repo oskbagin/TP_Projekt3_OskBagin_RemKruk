@@ -6,7 +6,7 @@ class Bloczek
 {
 	string Ksztalt;
 	int pozX, pozY;
-public:	bool zlapany;
+	bool zlapany;
 public:
 	Bloczek(void);	
 	Bloczek(string, int, int);
@@ -15,6 +15,7 @@ public:
 	int getX() { return pozX; }
 	int getY() { return pozY; }
 	int zmienX(int X) { pozX=X; return X; }
+	bool zmienZlapany(bool z);
 
 	~Bloczek(void);
 };
