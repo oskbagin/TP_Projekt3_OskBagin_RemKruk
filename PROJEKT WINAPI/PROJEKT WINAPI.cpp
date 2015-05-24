@@ -22,8 +22,8 @@ int positionX=450;
 int positionY=155;
 int ktory=0; 
 
-Bloczek klocuszki[5] = { Bloczek("Kolko", 272, 495), Bloczek("Trojkat", 400, 495), Bloczek("Kolko", 550, 495),
-					Bloczek("Kwadrat", 350, 495), Bloczek("Trojkat", 488, 495)};
+Bloczek klocuszki[5] = { Bloczek("Trojkat", 272, 495,0), Bloczek("Trojkat", 400, 495,0), Bloczek("Trojkat", 550, 495,0),
+					Bloczek("Kwadrat", 350, 495,0), Bloczek("Trojkat", 488, 495,0)};
 
 void rysujKlocuszki(HDC hdc, Bloczek tab[])
 {
@@ -76,10 +76,10 @@ void PoruszajDzwig( HDC hdc, int i, int k)
 	  }
 	  else{
 		  SolidBrush brush(Color(255, 255, 0, 0));
-		  Point punkty[3]={ Point(positionX-15, positionY+30), Point(positionX+15, positionY+30),
-															Point(positionX, positionY)};
+		  Point punkty[3]={ Point(positionX-15, positionY+50), Point(positionX+15, positionY+50),
+															Point(positionX, positionY+25)};
 
-		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
+		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY+25);
 		  graphics.FillPolygon(&brush, punkty, 3);
 		  //graphics.DrawImage(&image, positionX-31, positionY-20);
 	  }
@@ -262,19 +262,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(positionX < 660){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,5,0);
+				PoruszajDzwig(hdc,3,0);
 				EndPaint(hWnd, &ps);
 			}
             break;
         }
 		case VK_SPACE:
 		{
+			int i=0;
 			for(ktory=0; ktory<5; ktory++){
 				if(abs(klocuszki[ktory].getX() - positionX+5) < 15 && 
 					positionY > 400 && klocuszki[ktory].getKsztalt() == "Trojkat" || 
 					klocuszki[ktory].getZlapany()){
-						if(klocuszki[ktory].getZlapany())		klocuszki[ktory].zmienX(positionX-15);
-
+						if(klocuszki[ktory].getZlapany()){
+						
+ 							for( i = 0; i < 5 ; i++)
+							{
+								if (i==ktory) continue;
+								if (abs(klocuszki[i].getX() - positionX+5) < 50 )
+								{
+									klocuszki[i].zmienWieza();
+									break;
+								}
+							}
+							if (klocuszki[i].getWieza()>0 && klocuszki[i].getWieza()<=3 ) klocuszki[ktory].zmienY(positionY+50);
+							if (klocuszki[i].getWieza()<3)klocuszki[ktory].zmienX(positionX-15);
+							if (klocuszki[i].getWieza()>=3){
+								::MessageBox(hWnd, _T("Nie mozna odstawic elementu"), _T("LMB"), MB_OK);
+								return 0;
+							}
+						}
 						klocuszki[ktory].zmienZlapany(!klocuszki[ktory].getZlapany());
 						::MessageBox(hWnd, _T("ZLAPALEM!"), _T("LMB"), MB_OK);
 					break;
@@ -287,7 +304,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			positionY = 449;
 			InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,5,0);
+				PoruszajDzwig(hdc,3,0);
 				EndPaint(hWnd, &ps);
 				break;
 		}
@@ -296,7 +313,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			positionY=155;
 			InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,5,0);
+				PoruszajDzwig(hdc,3,0);
 				EndPaint(hWnd, &ps);
 				break;
 		}
@@ -305,7 +322,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(positionX > 200){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,-5,0);
+				PoruszajDzwig(hdc,-3,0);
 				EndPaint(hWnd, &ps);
 			}
             break;
@@ -316,7 +333,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(positionY < 450){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,0,5);
+				PoruszajDzwig(hdc,0,3);
 				EndPaint(hWnd, &ps);
 			}
             break;
@@ -326,7 +343,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(positionY>155){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,0,-5);
+				PoruszajDzwig(hdc,0,-3);
 				EndPaint(hWnd, &ps);
 			}
 			break;
