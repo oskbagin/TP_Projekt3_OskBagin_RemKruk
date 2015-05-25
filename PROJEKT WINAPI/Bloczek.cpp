@@ -3,16 +3,14 @@
 
 Bloczek::Bloczek(void)
 {
-	Bloczek("", 0, 0, 0);
+	Bloczek("", 0, 0);
 }
 
-Bloczek::Bloczek(string shape, int X, int Y, int ilosc)
+Bloczek::Bloczek(string shape, int X, int Y)
 {
 	zlapany=false;
 	pozX=X;	pozY=Y;
 	Ksztalt=shape;
-	wieza=ilosc;
-
 }
 
 bool Bloczek::zmienZlapany(bool z)
