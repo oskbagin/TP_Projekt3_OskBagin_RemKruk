@@ -302,10 +302,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
  							for( i = 0; i < 5 ; i++)
 							{
 								if (i==ktory) continue;
-								if ( (klocuszki[i].getKsztalt() == "Trojkat") && (abs(klocuszki[i].getX() - positionX+5) < 25 ) && positionY>410)
+								if ( (klocuszki[i].getKsztalt() == "Trojkat") && (abs(klocuszki[i].getX()+25 - positionX+5) < 25 ) && positionY>410)
 								{
 									klocuszki[ktory].zmienY(positionY+25);
 									klocuszki[ktory].zmienX(positionX-15);
+									break;
 								}
 								else if (positionY<410 ||(klocuszki[i].getKsztalt()=="Kolko" && (abs(klocuszki[i].getX() - positionX+5) < 25 )) 
 									|| (klocuszki[i].getKsztalt()=="Kwadrat" && (abs(klocuszki[i].getX() - positionX+5) < 25 )) )

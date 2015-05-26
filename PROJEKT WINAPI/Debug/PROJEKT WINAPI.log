@@ -1,7 +1,7 @@
-﻿Build started 2015-05-25 21:32:37.
+﻿Build started 2015-05-26 21:09:34.
      1>Project "C:\Users\Kruk\Desktop\projekt 2\TP_Projekt3_OskBagin_RemKruk\PROJEKT WINAPI\PROJEKT WINAPI.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Touching "Debug\PROJEKT WINAPI.unsuccessfulbuild".
+         Creating "Debug\PROJEKT WINAPI.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          All outputs are up-to-date.
          c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\PROJEKT WINAPI.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt "PROJEKT WINAPI.cpp"
@@ -29,4 +29,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.13
+Time Elapsed 00:00:02.08
