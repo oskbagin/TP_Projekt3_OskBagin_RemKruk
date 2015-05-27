@@ -2,15 +2,17 @@
 #include <string>
 using namespace std;
 
+enum Ksztalty { Trojkat, Kolko, Kwadrat };
+
 class Bloczek
 {
-	string Ksztalt;
+	Ksztalty ksztalt;
 	int pozX, pozY;
 	bool zlapany;
 public:
 	Bloczek(void);	
-	Bloczek(string, int, int);
-	string getKsztalt() { return Ksztalt; }
+	Bloczek(Ksztalty, int, int);
+	Ksztalty getKsztalt() { return ksztalt; }
 	bool getZlapany() { return zlapany; }
 	int getX() { return pozX; }
 	int getY() { return pozY; }

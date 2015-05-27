@@ -7,8 +7,11 @@
 
 //defines & consts
 #define MAX_LOADSTRING 100
+#define TROJKAT 0
+#define KOLKO   1
+#define KWADRAT 2
+#define ID_TIMER 3
 const int MaxKlockow=5;
-const int ID_TIMER=1;
 const int MAX_X=660;
 const int MIN_X=255;
 const int MAX_Y=467;
@@ -29,8 +32,8 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
-Bloczek klocuszki[MaxKlockow] = { Bloczek("Trojkat", 272, 495), Bloczek("Trojkat", 400, 495), Bloczek("Trojkat", 550, 495),
-					Bloczek("Kwadrat", 350, 495), Bloczek("Trojkat", 488, 495)};
+Bloczek klocuszki[MaxKlockow] = { Bloczek(Kolko, 272, 495), Bloczek(Trojkat, 400, 495), Bloczek(Trojkat, 550, 495),
+					Bloczek(Kwadrat, 350, 495), Bloczek(Trojkat, 488, 495)};
 
 void rysujKlocuszki(HDC hdc, Bloczek tab[])
 {
@@ -40,14 +43,14 @@ void rysujKlocuszki(HDC hdc, Bloczek tab[])
 
 	for(int i=0; i<MaxKlockow; i++){
 		// Rysowanie trójk¹ta
-		if(tab[i].getKsztalt() == "Trojkat" && !tab[i].getZlapany()){ 
+		if(tab[i].getKsztalt() == TROJKAT && !tab[i].getZlapany()){ 
 			SolidBrush brush(Color(255, 255, 0, 0));
 			Point punkty[3]={ Point(tab[i].getX(), tab[i].getY()), Point(tab[i].getX()+30, tab[i].getY()),
 															Point(tab[i].getX()+15, tab[i].getY()-30)};
 			graphics.FillPolygon(&brush, punkty, 3);
 		}
 		// Rysowanie kwadratu
-		else if(tab[i].getKsztalt() == "Kwadrat"){
+		else if(tab[i].getKsztalt() == KWADRAT){
 			int x=tab[i].getX(), y=tab[i].getY()-30;
 			Rect rect(x, y, 30,30);
 			SolidBrush brush(Color(255, 0, 0, 255));
@@ -55,7 +58,7 @@ void rysujKlocuszki(HDC hdc, Bloczek tab[])
 			graphics.FillRectangle(&brush, rect);
 		}
 		// Rysowanie kó³eczka
-		else if(tab[i].getKsztalt() == "Kolko"){
+		else if(tab[i].getKsztalt() == KOLKO){
 			SolidBrush brush(Color(255, 221, 255, 5));
 			graphics.FillEllipse(&brush, tab[i].getX(), tab[i].getY()-28, 30, 30);
 		}	
@@ -120,7 +123,7 @@ void spadaj()
 	static int wywolanie;
 	if(MAX_Y - klocuszki[ktory].getY() > 15){
 		klocuszki[ktory].zmienY(klocuszki[ktory].getY()+0.2*wywolanie*wywolanie);
-		wywolanie++;
+		wywolanie++;	
 	}
 	else{
 			klocuszki[ktory].zmienY(MAX_Y+28);
@@ -320,37 +323,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int i=0;
 			for(ktory=0; ktory<MaxKlockow; ktory++){
 				if(abs(klocuszki[ktory].getX() - positionX+15) < 5 && 
-					(abs(klocuszki[ktory].getY()-27 - positionY) < 5) && klocuszki[ktory].getKsztalt() == "Trojkat" || 
+					(abs(klocuszki[ktory].getY()-27 - positionY) < 5) && klocuszki[ktory].getKsztalt() == TROJKAT || 
 					klocuszki[ktory].getZlapany()){
 						if(klocuszki[ktory].getZlapany()){
 						
  							for( i = 0; i < MaxKlockow ; i++)
 							{
 								if (i==ktory) continue;
-								if ( (klocuszki[i].getKsztalt() == "Trojkat") && (abs(klocuszki[i].getX()+25 - positionX+5) < 25 ) && positionY>410)
+								if ( (klocuszki[i].getKsztalt() == TROJKAT) && (abs(klocuszki[i].getX()+25 - positionX) < 25 ) && positionY>410)
 								{
-									trzymaKlocek=false;
+									trzymaKlocek=true;
 									klocuszki[ktory].zmienY(positionY+25);
 									klocuszki[ktory].zmienX(positionX-15);
 									break;
 								}
-								else if (positionY<400 ||(klocuszki[i].getKsztalt()=="Kolko" && (abs(klocuszki[i].getX() - positionX+5) < 25 )) 
-									|| (klocuszki[i].getKsztalt()=="Kwadrat" && (abs(klocuszki[i].getX() - positionX+5) < 25 )) )
+								else if (positionY<400 ||(klocuszki[i].getKsztalt()==KOLKO && (abs(klocuszki[i].getX() - positionX+5) < 25 )) 
+									|| (klocuszki[i].getKsztalt()==KWADRAT && (abs(klocuszki[i].getX() - positionX+5) < 25 )) )
 								{
 								::MessageBox(hWnd, _T("Nie mozna odstawic elementu"), _T("ERROR"), MB_OK);	
 								return 0;
 								}
 								else
 								{
+									trzymaKlocek=false;
 									klocuszki[ktory].zmienX(positionX-15);
 									klocuszki[ktory].zmienY(positionY+25);
 								}	
 							}			
 						}
 						klocuszki[ktory].zmienZlapany(!klocuszki[ktory].getZlapany());
-						trzymaKlocek=!trzymaKlocek;
-						if(klocuszki[ktory].getZlapany())::MessageBox(hWnd, _T("ZLAPALEM!"), _T(""), MB_OK);
-						else ::MessageBox(hWnd, _T("ODSTAWIONO!"), _T(""), MB_OK);
+						
+						if(klocuszki[ktory].getZlapany())	::MessageBox(hWnd, _T("ZLAPALEM!"), _T(""), MB_OK);
+						else								::MessageBox(hWnd, _T("ODSTAWIONO!"), _T(""), MB_OK);
 					break;
 				}
 			}

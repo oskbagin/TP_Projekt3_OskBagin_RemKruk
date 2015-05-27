@@ -3,14 +3,14 @@
 
 Bloczek::Bloczek(void)
 {
-	Bloczek("", 0, 0);
+	Bloczek(Trojkat, 0, 0);
 }
 
-Bloczek::Bloczek(string shape, int X, int Y)
+Bloczek::Bloczek(Ksztalty shape, int X, int Y)
 {
 	zlapany=false;
 	pozX=X;	pozY=Y;
-	Ksztalt=shape;
+	ksztalt=shape;
 }
 
 bool Bloczek::zmienZlapany(bool z)
