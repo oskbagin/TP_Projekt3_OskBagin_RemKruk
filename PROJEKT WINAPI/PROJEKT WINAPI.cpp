@@ -99,7 +99,7 @@ void PoruszajDzwig( HDC hdc, int i, int k, HWND hWnd)
 	  else{
 		  SolidBrush brush(Color(255, 255, 0, 0));
 		  Point punkty[3]={ Point(positionX-15, positionY+25), Point(positionX+15, positionY+25),
-															Point(positionX, positionY)};
+															Point(positionX, positionY-5)};
 
 		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
 		  graphics.FillPolygon(&brush, punkty, 3);
@@ -122,13 +122,26 @@ void spadaj()
 {
 	static int wywolanie;
 	if(MAX_Y - klocuszki[ktory].getY() > 15){
-		klocuszki[ktory].zmienY(klocuszki[ktory].getY()+0.2*wywolanie*wywolanie);
+		klocuszki[ktory].zmienY(klocuszki[ktory].getY()+0.4*wywolanie*wywolanie);
 		wywolanie++;	
 	}
 	else{
 			klocuszki[ktory].zmienY(MAX_Y+28);
 			wywolanie=0;
 	}
+}
+
+bool sprawdzKolizje(int klawisz)
+{
+	if(!trzymaKlocek) return false;
+	for(int i=0; i<MaxKlockow; i++){
+		if(i==ktory) continue;
+		if((klawisz==VK_LEFT && abs(klocuszki[i].getX()-positionX+42) < 5)    // kolizja z prawej strony
+			|| (klawisz==VK_RIGHT && abs(klocuszki[i].getX()-positionX-15) < 5)  // kolizja z lewej strony
+			//|| (klawisz==VK_DOWN && abs(klocuszki[i].getX()-positionX+15) < 5)
+			){ return true; }
+	}
+	return false;
 }
 
 // MAIN
@@ -264,9 +277,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			int iPosX = LOWORD(lParam);
 			int iPosY = HIWORD(lParam);
-			wchar_t waCoord[20];
-			wsprintf(waCoord, _T(" (%i, %i) "), iPosX, iPosY);
-			::MessageBox(hWnd, waCoord, _T("LMB"), MB_OK);
+			wchar_t pozycja[20];
+			wsprintf(pozycja, _T(" (%i, %i) "), iPosX, iPosY);
+			::MessageBox(hWnd, pozycja, _T("LMB"), MB_OK);
 			break;
 		}
 	case WM_COMMAND:
@@ -308,16 +321,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	{
     switch (wParam) {
-        case VK_RIGHT:
-        {
-			if(positionX < MAX_X){
-				InvalidateRect(hWnd, NULL, FALSE);
-				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,3,0,hWnd);
-				EndPaint(hWnd, &ps);
-			}
-            break;
-        }
 		case VK_SPACE:
 		{
 			int i=0;
@@ -332,7 +335,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								if (i==ktory) continue;
 								if ( (klocuszki[i].getKsztalt() == TROJKAT) && (abs(klocuszki[i].getX()+25 - positionX) < 25 ) && positionY>410)
 								{
-									trzymaKlocek=true;
 									klocuszki[ktory].zmienY(positionY+25);
 									klocuszki[ktory].zmienX(positionX-15);
 									break;
@@ -345,16 +347,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								}
 								else
 								{
-									trzymaKlocek=false;
 									klocuszki[ktory].zmienX(positionX-15);
 									klocuszki[ktory].zmienY(positionY+25);
 								}	
 							}			
 						}
 						klocuszki[ktory].zmienZlapany(!klocuszki[ktory].getZlapany());
-						
+									
 						if(klocuszki[ktory].getZlapany())	::MessageBox(hWnd, _T("ZLAPALEM!"), _T(""), MB_OK);
 						else								::MessageBox(hWnd, _T("ODSTAWIONO!"), _T(""), MB_OK);
+						trzymaKlocek=klocuszki[ktory].getZlapany();
 					break;
 				}
 			}
@@ -362,7 +364,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case VK_END: // instantowe opuszczenie haka na dó³
 		{
-			positionY = MAX_Y-10;
+			positionY = MAX_Y;
 			InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
 				PoruszajDzwig(hdc,0,0,hWnd);
@@ -380,7 +382,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case VK_LEFT:
         {
-			if(positionX > MIN_X){
+			bool kolizja=sprawdzKolizje(VK_LEFT);
+			if(positionX>MIN_X +(trzymaKlocek?15:0) && (!kolizja || positionY < MAX_Y-25)){
 				InvalidateRect(hWnd, NULL, FALSE);
 				hdc = BeginPaint(hWnd, &ps);
 				PoruszajDzwig(hdc,-3,0,hWnd);
@@ -388,7 +391,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
             break;
         }
-		
+		case VK_RIGHT:
+        {
+			bool kolizja=sprawdzKolizje(VK_RIGHT);
+			if(positionX<MAX_X && (!kolizja || positionY < MAX_Y-25)){
+				InvalidateRect(hWnd, NULL, FALSE);
+				hdc = BeginPaint(hWnd, &ps);
+				PoruszajDzwig(hdc,3,0,hWnd);
+				EndPaint(hWnd, &ps);
+			}
+            break;
+        }
 		case VK_DOWN:
         {
 			if(positionY < MAX_Y){
