@@ -11,20 +11,26 @@
 #define KOLKO   1
 #define KWADRAT 2
 #define ID_TIMER 3
-const int MaxKlockow=5;
+#define ID_BUTTON1 4
+#define ID_BUTTON2 5
+#define ID_BUTTON3 6
+const int MaxKlockow=10;
 const int MAX_X=660;
 const int MIN_X=255;
 const int MAX_Y=467;
 const int MIN_Y=155;
 
 // Global Variables:
+HWND hwndButton;								// przycisk
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 int positionX=450;
 int positionY=155;
-int ktory; 
+int ktory;
+int ileKlockow;
 bool trzymaKlocek;
+RECT drawArea1 = { 0, 0, 1024, 600 };
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -41,7 +47,7 @@ void rysujKlocuszki(HDC hdc, Bloczek tab[])
 	
 	Pen      pen(Color(255, 0, 0, 255),2);
 
-	for(int i=0; i<MaxKlockow; i++){
+	for(int i=0; i<ileKlockow; i++){
 		// Rysowanie trójk¹ta
 		if(tab[i].getKsztalt() == TROJKAT && !tab[i].getZlapany()){ 
 			SolidBrush brush(Color(255, 255, 0, 0));
@@ -60,6 +66,7 @@ void rysujKlocuszki(HDC hdc, Bloczek tab[])
 		// Rysowanie kó³eczka
 		else if(tab[i].getKsztalt() == KOLKO){
 			SolidBrush brush(Color(255, 221, 255, 5));
+
 			graphics.FillEllipse(&brush, tab[i].getX(), tab[i].getY()-28, 30, 30);
 		}	
 	}
@@ -100,7 +107,6 @@ void PoruszajDzwig( HDC hdc, int i, int k, HWND hWnd)
 		  SolidBrush brush(Color(255, 255, 0, 0));
 		  Point punkty[3]={ Point(positionX-15, positionY+25), Point(positionX+15, positionY+25),
 															Point(positionX, positionY-5)};
-
 		  graphics.DrawLine(&pen, positionX, 135, positionX, positionY);
 		  graphics.FillPolygon(&brush, punkty, 3);
 	  }
@@ -120,29 +126,50 @@ void PoruszajDzwig( HDC hdc, int i, int k, HWND hWnd)
 
 void spadaj()
 {
+	int klocekPod=ileKlockow+1;
+	for(int i=0; i<ileKlockow; i++){
+		if(i==ktory) continue;
+		if(abs(15+klocuszki[i].getX()-klocuszki[ktory].getX()) < 10){
+			klocekPod=i;
+			break;
+		}
+	}
+
 	static int wywolanie;
-	if(MAX_Y - klocuszki[ktory].getY() > 15){
-		klocuszki[ktory].zmienY(klocuszki[ktory].getY()+0.4*wywolanie*wywolanie);
-		wywolanie++;	
-	}
-	else{
-			klocuszki[ktory].zmienY(MAX_Y+28);
-			wywolanie=0;
-	}
+		if( MAX_Y-klocuszki[ktory].getY() > 15){
+			klocuszki[ktory].zmienY(klocuszki[ktory].getY()+static_cast<int>(0.4*wywolanie*wywolanie)-
+								(klocekPod==6?0:klocuszki[klocekPod].getY()));
+			wywolanie++;	
+		}
+		else{
+				klocuszki[ktory].zmienY(MAX_Y+28-(klocekPod==6?0:klocuszki[klocekPod].getY()));
+				wywolanie=0;
+		}
 }
 
 bool sprawdzKolizje(int klawisz)
 {
 	if(!trzymaKlocek) return false;
-	for(int i=0; i<MaxKlockow; i++){
+	for(int i=0; i<ileKlockow; i++){
 		if(i==ktory) continue;
-		if((klawisz==VK_LEFT && abs(klocuszki[i].getX()-positionX+42) < 5)    // kolizja z prawej strony
-			|| (klawisz==VK_RIGHT && abs(klocuszki[i].getX()-positionX-15) < 5)  // kolizja z lewej strony
-			//|| (klawisz==VK_DOWN && abs(klocuszki[i].getX()-positionX+15) < 5)
+		if((klawisz==VK_LEFT && abs(klocuszki[i].getX()-positionX+42)<5)    // kolizja z prawej strony
+			|| (klawisz==VK_RIGHT && abs(klocuszki[i].getX()-positionX-15)<5)  // kolizja z lewej strony
+			|| (klawisz==VK_SPACE || klawisz==VK_DOWN && abs(klocuszki[i].getX()-positionX+15)<25 && klocuszki[i].getY()-positionY < 57)
 			){ return true; }
 	}
 	return false;
 }
+
+//void postawNaWiezy()
+//{
+//	int i;
+//	for( i=0; i<ileKlockow; i++){
+//		if(i==ktory) continue;
+//		if(abs(positionX-klocuszki[i].getX()+15) < 5){
+//			if(positionY>klocuszki[i].getY()+15) < 5)
+//		}
+//	}
+//}
 
 // MAIN
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -238,10 +265,28 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
+   ileKlockow=5;
    HWND hWnd;
    hInst = hInstance; // Store instance handle in our global variable
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, 1500, 1500, NULL, NULL, hInstance, NULL);
+      CW_USEDEFAULT, 0, 1280, 768, NULL, NULL, hInstance, NULL);
+   /* metro mWT2015 kolo 9:00 */
+  // uno.biomed.gda.pl
+   hwndButton = CreateWindow(TEXT("button"),                      // The class name required is button
+		TEXT("Kwadrat"),                  // the caption of the button
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,  // the styles
+		1100, 60,                                  // the left and top co-ordinates
+		80, 50,                              // width and height
+		hWnd,                                 // parent window handle
+		(HMENU)ID_BUTTON1,                   // the ID of your button
+		hInstance,                            // the instance of your application
+		NULL);          
+
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Trójk¹t"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 120,
+		80, 50, hWnd, (HMENU)ID_BUTTON2, hInstance, NULL);          
+
+   hwndButton = CreateWindow(TEXT("button"), TEXT("Kó³eczko"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 180,
+		80, 50, hWnd, (HMENU)ID_BUTTON3, hInstance, NULL);          
 
    if (!hWnd)
    {
@@ -302,7 +347,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(!klocuszki[ktory].getZlapany() && klocuszki[ktory].getY()<MAX_Y+25){
 			spadaj();
 		}
-			InvalidateRect(hWnd, NULL, FALSE);
+			InvalidateRect(hWnd, &drawArea1, FALSE);
 			break;
 				  }
 	case WM_PAINT:{
@@ -320,17 +365,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_KEYDOWN:
 	{
-    switch (wParam) {
-		case VK_SPACE:
-		{
-			int i=0;
-			for(ktory=0; ktory<MaxKlockow; ktory++){
-				if(abs(klocuszki[ktory].getX() - positionX+15) < 5 && 
-					(abs(klocuszki[ktory].getY()-27 - positionY) < 5) && klocuszki[ktory].getKsztalt() == TROJKAT || 
-					klocuszki[ktory].getZlapany()){
-						if(klocuszki[ktory].getZlapany()){
-						
- 							for( i = 0; i < MaxKlockow ; i++)
+		InvalidateRect(hWnd, &drawArea1, FALSE);
+		hdc = BeginPaint(hWnd, &ps);
+
+		switch (wParam) {
+			case VK_SPACE:
+			{
+				int i=0;
+				for(ktory=0; ktory<ileKlockow; ktory++){
+					if(abs(klocuszki[ktory].getX() - positionX+15) < 5 && 
+						(abs(klocuszki[ktory].getY()-27 - positionY) < 5) && klocuszki[ktory].getKsztalt() == TROJKAT || 
+						klocuszki[ktory].getZlapany()){
+							if(klocuszki[ktory].getZlapany()){
+ 							for( i = 0; i < ileKlockow ; i++)
 							{
 								if (i==ktory) continue;
 								if ( (klocuszki[i].getKsztalt() == TROJKAT) && (abs(klocuszki[i].getX()+25 - positionX) < 25 ) && positionY>410)
@@ -339,7 +386,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 									klocuszki[ktory].zmienX(positionX-15);
 									break;
 								}
-								else if (positionY<400 ||(klocuszki[i].getKsztalt()==KOLKO && (abs(klocuszki[i].getX() - positionX+5) < 25 )) 
+								else if (positionY<380 ||(klocuszki[i].getKsztalt()==KOLKO && (abs(klocuszki[i].getX() - positionX+5) < 25 )) 
 									|| (klocuszki[i].getKsztalt()==KWADRAT && (abs(klocuszki[i].getX() - positionX+5) < 25 )) )
 								{
 								::MessageBox(hWnd, _T("Nie mozna odstawic elementu"), _T("ERROR"), MB_OK);	
@@ -365,64 +412,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case VK_END: // instantowe opuszczenie haka na dó³
 		{
 			positionY = MAX_Y;
-			InvalidateRect(hWnd, NULL, FALSE);
-				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,0,0,hWnd);
-				EndPaint(hWnd, &ps);
-				break;
+			PoruszajDzwig(hdc,0,0,hWnd);
+			break;
 		}
 		case VK_HOME: // instantowe wci¹gniêcie haka na wysokoœæ ramienia
 		{
 			positionY=MIN_Y;
-			InvalidateRect(hWnd, NULL, FALSE);
-				hdc = BeginPaint(hWnd, &ps);
-				PoruszajDzwig(hdc,0,0,hWnd);
-				EndPaint(hWnd, &ps);
-				break;
+			PoruszajDzwig(hdc,0,0,hWnd);
+			break;
 		}
 		case VK_LEFT:
         {
 			bool kolizja=sprawdzKolizje(VK_LEFT);
-			if(positionX>MIN_X +(trzymaKlocek?15:0) && (!kolizja || positionY < MAX_Y-25)){
-				InvalidateRect(hWnd, NULL, FALSE);
-				hdc = BeginPaint(hWnd, &ps);
+			if(positionX>MIN_X +(trzymaKlocek?15:0) && (!kolizja || positionY < MAX_Y-25))
 				PoruszajDzwig(hdc,-3,0,hWnd);
-				EndPaint(hWnd, &ps);
-			}
             break;
         }
 		case VK_RIGHT:
         {
 			bool kolizja=sprawdzKolizje(VK_RIGHT);
-			if(positionX<MAX_X && (!kolizja || positionY < MAX_Y-25)){
-				InvalidateRect(hWnd, NULL, FALSE);
-				hdc = BeginPaint(hWnd, &ps);
+			if(positionX<MAX_X && (!kolizja || positionY < MAX_Y-25))
 				PoruszajDzwig(hdc,3,0,hWnd);
-				EndPaint(hWnd, &ps);
-			}
             break;
         }
 		case VK_DOWN:
         {
-			if(positionY < MAX_Y){
-				InvalidateRect(hWnd, NULL, FALSE);
-				hdc = BeginPaint(hWnd, &ps);
+			bool kolizja=sprawdzKolizje(VK_DOWN);
+			if(positionY<MAX_Y && !kolizja)
 				PoruszajDzwig(hdc,0,3,hWnd);
-				EndPaint(hWnd, &ps);
-			}
             break;
         }
 		case VK_UP:
         {
-			if(positionY>MIN_Y){
-				InvalidateRect(hWnd, NULL, FALSE);
-				hdc = BeginPaint(hWnd, &ps);
+			if(positionY>MIN_Y)
 				PoruszajDzwig(hdc,0,-3,hWnd);
-				EndPaint(hWnd, &ps);
-			}
 			break;
         }
     }
+	EndPaint(hWnd, &ps);
     break;
 }
 
