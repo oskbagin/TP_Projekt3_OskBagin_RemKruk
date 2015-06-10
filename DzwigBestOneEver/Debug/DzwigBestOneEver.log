@@ -1,7 +1,4 @@
-﻿  stdafx.cpp
-  Klocuszek.cpp
-  DzwigBestOneEver.cpp
-c:\users\oskar\documents\github\tp_projekt3_oskbagin_remkruk\dzwigbestoneever\dzwigbestoneever.cpp(57): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
-  Generating Code...
-c:\users\oskar\documents\github\tp_projekt3_oskbagin_remkruk\dzwigbestoneever\dzwigbestoneever.cpp(310): warning C4715: 'WndProc' : not all control paths return a value
+﻿  DzwigBestOneEver.cpp
+c:\users\oskar\documents\github\tp_projekt3_oskbagin_remkruk\dzwigbestoneever\dzwigbestoneever.cpp(59): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\oskar\documents\github\tp_projekt3_oskbagin_remkruk\dzwigbestoneever\dzwigbestoneever.cpp(306): warning C4715: 'WndProc' : not all control paths return a value
   DzwigBestOneEver.vcxproj -> C:\Users\Oskar\Documents\GitHub\TP_Projekt3_OskBagin_RemKruk\Debug\DzwigBestOneEver.exe

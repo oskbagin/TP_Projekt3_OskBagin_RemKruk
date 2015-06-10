@@ -39,11 +39,13 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 void generujPoczatkoweUstawienie(Klocuszek*);
 void rysujKlocuszki(HWND, Klocuszek*);
+void dodajFigure(HWND, Ksztalty);
 void dodajTrojkat(HWND);
 void dodajKoleczko(HWND);
 void dodajKwadrat(HWND);
 void PoruszajDzwig(HDC, int, int, HWND);
 int pozXwspolne(int, int=0);
+int wyszukajNajwiekszyX();
 void zlapKlocek(HWND, int);
 void upuscKlocek(HWND);
 void postawNaWiezy(int, HWND);
@@ -204,21 +206,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case ID_BUTTON1:{
-			if(ileKlockow<MaxKlockow)
-				dodajKwadrat(hWnd);
-			else ::MessageBox(hWnd, TEXT("Max 10 klocków!"), TEXT("BEEP"), NULL); 
+			dodajFigure(hWnd, Kwadrat);
 			break;
 		}
 		case ID_BUTTON2:{
-			if(ileKlockow<MaxKlockow)
-				dodajTrojkat(hWnd);
-			else ::MessageBox(hWnd, TEXT("Max 10 klocków!"), TEXT("BEEP"), NULL); 
+			dodajFigure(hWnd, Trojkat);
 			break;
 		}
 		case ID_BUTTON3:{
-			if(ileKlockow<MaxKlockow)
-				dodajKoleczko(hWnd);
-			else ::MessageBox(hWnd, TEXT("Max 10 klocków!"), TEXT("BEEP"), NULL); 
+			dodajFigure(hWnd, Kolko);
 			break;
 		}
 		case IDM_ABOUT:
@@ -331,35 +327,57 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 void generujPoczatkoweUstawienie(Klocuszek* tab)
 {
-	ileKlockow=2;
+	int miejsce=MIN_X;
+	ileKlockow=3;
 	Ksztalty shapes[3]={ Kolko, Kwadrat, Trojkat };
 	for(int i=0; i<ileKlockow; i++)
 	{
-		Elementy[i]=Klocuszek(shapes[rand()%3], MIN_X+rand()%(MAX_X-MIN_X), MAX_Y-15);
+		miejsce+=30+rand()%30;
+		Elementy[i]=Klocuszek(shapes[rand()%3], miejsce, MAX_Y-15);
 	}
 }
 
-void dodajTrojkat(HWND hWnd)
+void dodajFigure(HWND hWnd, Ksztalty ksztalt)
 {
-	ileKlockow++;
-	Elementy[ileKlockow-1]=Klocuszek(Trojkat, MIN_X+rand()%(MAX_X-MIN_X), MAX_Y-15);
-	::MessageBox(hWnd, TEXT("Dodano trójkat"), TEXT("Dodano"), NULL);
+	if(ileKlockow<MaxKlockow){
+		ileKlockow++;
+		int minXNowego=wyszukajNajwiekszyX();
+		bool miesciSie = minXNowego>MAX_X-30?false:true;
+		Klocuszek temp=Klocuszek(ksztalt, 
+			// jeœli mo¿na losowaæ przesuniêcie, to je losuje, w przeciwnym
+			// wypadku dodaje nowy klocek w losowym, brzydkim miejscu
+			(miesciSie? 30+minXNowego+rand()%30 : MIN_X+rand()%(MAX_X-MIN_X))
+			, MAX_Y-15);
+		Elementy[ileKlockow-1]=temp;
+
+		switch(ksztalt){
+			case KOLKO:{
+				::MessageBox(hWnd, _T("Dodano kó³eczko."), TEXT("Dostawa materia³ów"), NULL);
+				break;
+			}
+			case KWADRAT:{
+				::MessageBox(hWnd, _T("Dodano kwadracik."), TEXT("Dostawa materia³ów"), NULL);
+				break;
+			}
+			case TROJKAT:{
+				::MessageBox(hWnd, _T("Dodano trójk¹t."), TEXT("Dostawa materia³ów"), NULL);
+				break;
+			default:
+				::MessageBox(hWnd, TEXT("Cos poszlo nie tak."), TEXT("Dodano"), NULL);
+				break;
+			}
+		}
+	}
+	else ::MessageBox(hWnd, TEXT("Max 10 klocków!"), TEXT("BEEP"), NULL); 
 }
 
-void dodajKwadrat(HWND hWnd)
+int wyszukajNajwiekszyX()
 {
-	ileKlockow++;
-	Elementy[ileKlockow-1]=Klocuszek(Kwadrat, MIN_X+rand()%(MAX_X-MIN_X), MAX_Y-15);
-	InvalidateRect(hWnd, &drawArea1, FALSE);
-	::MessageBox(hWnd, TEXT("Dodano kwadrat"), TEXT("Dodano"), NULL);
-}
-
-void dodajKoleczko(HWND hWnd)
-{
-	ileKlockow++;
-	Elementy[ileKlockow-1]=Klocuszek(Kolko, MIN_X+rand()%(MAX_X-MIN_X), MAX_Y-15);
-	InvalidateRect(hWnd, &drawArea1, FALSE);
-	::MessageBox(hWnd, TEXT("Dodano kó³ko"), TEXT("Dodano"), NULL);
+	int najwiekszyX=Elementy[0].getX();
+	for(int i=1; i<ileKlockow; i++){
+		if(Elementy[i].getX()>najwiekszyX) najwiekszyX=Elementy[i].getX();
+	}
+	return najwiekszyX;
 }
 
 void rysujKlocuszki(HDC hdc, Klocuszek tab[])
