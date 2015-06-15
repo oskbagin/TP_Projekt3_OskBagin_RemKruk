@@ -328,7 +328,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 void generujPoczatkoweUstawienie(Klocuszek* tab)
 {
 	int miejsce=MIN_X;
-	ileKlockow=3;
+	ileKlockow=2;
 	Ksztalty shapes[3]={ Kolko, Kwadrat, Trojkat };
 	for(int i=0; i<ileKlockow; i++)
 	{
@@ -465,10 +465,21 @@ void PoruszajDzwig( HDC hdc, int i, int k, HWND hWnd)
 
 int pozXwspolne(int pozycja, int start)
 {
-	int i=start;
+	int i=start, ktoryNW=0;
 	for(i; i<ileKlockow; i++){
 		if(i==ktory) continue;
-		if(abs(Elementy[i].getX()+15-pozycja) < 15) return i;
+		if(abs(Elementy[i].getX()+15-pozycja) < 15){
+			ktoryNW=Elementy[i].getKNW();
+			if(ktoryNW==1)
+				return i;
+			else{
+				for(int j=i; j<ileKlockow; j++){
+					if(abs(Elementy[j].getX()+15-pozycja) < 15 
+							&& Elementy[j].getKNW()==0)
+						return j;
+				}
+			}
+		}
 	}
 	return -1;
 }
@@ -506,18 +517,19 @@ void postawNaWiezy(int indexPod, HWND hWnd)
 		int k=Elementy[indexPod].getKNW();
 		int temp;
 		for( int i=indexPod; i<ileKlockow; i++){
-			if(pozXwspolne(Elementy[i].getX(), i)){
+			if(pozXwspolne(Elementy[i].getX())){
 				temp=Elementy[i].getKNW();
 				if(temp>k) k=temp; }
 		}
 
-		if(positionY < MAX_Y-80) ::MessageBox(hWnd, TEXT("Ustawiono ju¿ trzy trójk¹ciki na wie¿y."), TEXT("!"), NULL);
-		else{
+		if(positionY > MAX_Y-80)
+		{
 			trzymaKlocek=false;
 			Elementy[ktory].set_czyZlapany(false);
 			Elementy[ktory].setX(positionX-15);
-			Elementy[ktory].setY(Elementy[indexPod].getY()-30);
+			Elementy[ktory].setY(Elementy[indexPod].getY()-(k+1)*30);
 			Elementy[indexPod].set_moznaRuszyc(false);
+			Elementy[indexPod].set_KNW((MAX_Y-positionY)/30);
 		}
 	}
 }
@@ -528,7 +540,7 @@ bool sprawdzKolizje(int klawisz)
 	else{
 		for(int i=0; i<ileKlockow; i++){
 			if(i==ktory) continue;
-			if(klawisz==VK_LEFT && abs(Elementy[i].getX()-positionX+42) < 5				// kolizja z prawej strony
+			else if(klawisz==VK_LEFT && abs(Elementy[i].getX()-positionX+42) < 5				// kolizja z prawej strony
 				|| klawisz==VK_RIGHT && abs(Elementy[i].getX()-positionX-15) < 5		// kolizja z lewej strony
 				|| klawisz==VK_DOWN && abs(Elementy[i].getX()-positionX+15)<25 && Elementy[i].getY()-positionY < 57) // kolizja z gory
 			{ return true; }
